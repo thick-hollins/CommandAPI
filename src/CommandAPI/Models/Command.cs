@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CommandApi.Models;
 
 public class Command
-{
+{   
     [Key]
     [Required]
     public int Id { get; set; }
