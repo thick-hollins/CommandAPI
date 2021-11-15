@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers();
 builder.Services.AddScoped<IRepo, SQLRepo>();
 
@@ -13,6 +14,7 @@ cstring.Password = builder.Configuration["Password"];
 
 builder.Services.AddDbContext<CommandContext>(
     opt => opt.UseNpgsql(cstring.ConnectionString));
+
 var app = builder.Build();
 
 app.MapGet("/", () => "Hell006 World!");
