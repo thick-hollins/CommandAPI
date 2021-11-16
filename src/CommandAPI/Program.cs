@@ -1,10 +1,16 @@
 using CommandApi.Data;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddControllers();
+
+builder.Services.AddControllers().AddNewtonsoftJson(s => 
+{
+    s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+});
+
 builder.Services.AddScoped<IRepo, SQLRepo>();
 
 var cstring = new NpgsqlConnectionStringBuilder();

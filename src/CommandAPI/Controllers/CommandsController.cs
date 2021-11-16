@@ -2,6 +2,7 @@ using AutoMapper;
 using CommandApi.Data;
 using CommandApi.Dtos;
 using CommandApi.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CommandApi.Contollers;
@@ -45,4 +46,41 @@ public class CommandsController : ControllerBase
 
         return CreatedAtRoute(nameof(GetCommand), new { Id = commandReadDto.Id }, commandReadDto);
     }
+
+    [HttpPut("{id}")]
+    public ActionResult UpdateCommand(int id, CommandUpdateDto commandUpdateDto)
+    {
+        var commandModel = _repository.GetCommand(id);
+        if (commandModel == null) return NotFound();
+        _mapper.Map(commandUpdateDto, commandModel);
+        _repository.UpdateCommand(commandModel);
+        _repository.SaveChanges();
+        return NoContent();
+    }
+
+    [HttpPatch("{id}")]
+    public ActionResult PartialCommandUpdate(int id, JsonPatchDocument<CommandUpdateDto> patchDoc)
+    {
+        var commandModel = _repository.GetCommand(id);
+        if (commandModel == null) return NotFound();
+        var commandToPatch = _mapper.Map<CommandUpdateDto>(commandModel);
+        patchDoc.ApplyTo(commandToPatch, ModelState);
+        if (!TryValidateModel(commandToPatch)) return ValidationProblem(ModelState);
+        _mapper.Map(commandToPatch, commandModel);
+        _repository.UpdateCommand(commandModel);
+        _repository.SaveChanges();
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public ActionResult DeleteCommand(int id)
+    {
+        var commandModel = _repository.GetCommand(id);
+        if (commandModel == null) return NotFound();
+        _repository.DeleteCommand(commandModel);
+        _repository.SaveChanges();
+        return NoContent();
+    }
+
+
 }
